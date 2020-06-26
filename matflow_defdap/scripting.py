@@ -108,7 +108,7 @@ def get_wrapper_script(script_name, snippets, outputs):
     out += dedent('''\
         if __name__ == '__main__':        
             inputs = hickle.load(sys.argv[1])
-            outputs = main(**inputs)      
+            outputs = main(**inputs)
             hickle.dump(outputs, 'outputs.hdf5')
 
     ''')
