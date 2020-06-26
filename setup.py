@@ -4,6 +4,7 @@ import os
 import re
 from setuptools import find_packages, setup
 
+
 def get_version():
 
     ver_file = 'matflow_defdap/_version.py'
@@ -67,7 +68,7 @@ setup(
     keywords='matflow, materials-science, computational-workflow',
     name='matflow-defdap',
     packages=find_packages(),
-    package_data={'': ['snippets/*.m']},
+    package_data={'': ['snippets/*.py']},
     project_urls={
         'GitHub': 'https://github.com/LightForm-group/matflow-defdap'
     },
