@@ -96,7 +96,6 @@ def get_wrapper_script(script_name, snippets, outputs):
 
     req_imports = [
         'import sys',
-        'import json',
         'import hickle',
         'from pathlib import Path',
     ]
