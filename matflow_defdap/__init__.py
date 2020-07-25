@@ -24,6 +24,12 @@ func_mapper = partial(func_mapper, software=SOFTWARE)
 software_versions = partial(software_versions, software=SOFTWARE)
 sources_mapper = partial(sources_mapper, software=SOFTWARE)
 
+def main_func(func):
+    '''Decorator used to annotate which function within a snippet is the main function.'''
+    def main_inner(*args, **kwargs):
+        func(*args, **kwargs)
+    return main_inner
+
 # Import any modules that contain functions decorated by the matflow function decorators.
 # This import must come after the above `partial`s.
 from matflow_defdap import main
