@@ -1,6 +1,9 @@
 import defdap.hrdic as hrdic
 
+from matflow_defdap import main_func
 
+
+@main_func
 def load_DIC_map(root_path, dic_filename, dic_crop, dic_scale):
     'Load in DIC, crop and set scale.'
 
