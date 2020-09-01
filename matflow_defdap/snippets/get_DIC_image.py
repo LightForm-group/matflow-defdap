@@ -26,6 +26,9 @@ def get_DIC_image(DicMap):
     remove_boundary_points(grain_image)
     remove_boundary_points(grain_image, force_remove=True)
 
+    # downstream expects grain numbering to start at 0 not 1
+    grain_image -= 1
+
     DIC_image = {
         'orientations': grain_eulers,
         'grains': grain_image,
