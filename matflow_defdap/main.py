@@ -36,7 +36,7 @@ def load_microstructure_EBSD_DIC():
 
 
 @input_mapper(input_file='inputs.hdf5', task='load_microstructure', method='EBSD+DIC')
-def write_param_file(path, DIC, EBSD, transform_type, root_path):
+def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor):
     obj = {
         'dic_filename': DIC['filename'],
         'dic_crop': DIC['crop'],
@@ -51,6 +51,7 @@ def write_param_file(path, DIC, EBSD, transform_type, root_path):
         'ebsd_homog_points': EBSD['homog_points'],
         'transform_type': transform_type,
         'root_path': root_path,
+        'scaling_factor': scaling_factor,
     }
     hickle.dump(obj, path)
 

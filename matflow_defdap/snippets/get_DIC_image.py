@@ -1,12 +1,13 @@
 import numpy as np
 from defdap.quat import Quat
 from scipy.stats import mode
+from scipy.ndimage import zoom
 
 from matflow_defdap import main_func
 
 
 @main_func
-def get_DIC_image(DicMap):
+def get_DIC_image(DicMap, scaling_factor):
 
     # Construct an array of Euler angles
     grain_eulers = np.empty((len(DicMap), 3))
@@ -25,6 +26,10 @@ def get_DIC_image(DicMap):
     remove_small_grain_points(grain_image)
     remove_boundary_points(grain_image)
     remove_boundary_points(grain_image, force_remove=True)
+
+    # scale down image if needed
+    if scaling_factor != 1:
+        grain_image = zoom(grain_image, scaling_factor, order=0, prefilter=False, mode='nearest')
 
     # downstream expects grain numbering to start at 0 not 1
     grain_image -= 1
