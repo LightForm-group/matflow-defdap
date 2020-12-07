@@ -13,10 +13,17 @@ def get_DIC_image(DicMap, scaling_factor):
     grain_eulers = np.empty((len(DicMap), 3))
 
     # Transformation orientations from EBSD orientation reference frame to EBSD spatial reference frame
-    transform_quat = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
+    frame_transform = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
     
-    for i, grain in enumerate(DicMap):
-        grain_eulers[i] = (grain.ebsdGrain.refOri * transform_quat).eulerAngles()
+    if DicMap.ebsdMap.crystalSym == 'hexagonal':
+        # Convert hex conventions from y // a2 of the EBSD map to x // a1 for DAMASK
+        hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
+        for i, grain in enumerate(DicMap):
+            grain_eulers[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform).eulerAngles()
+
+    else:
+        for i, grain in enumerate(DicMap):
+            grain_eulers[i] = (grain.ebsdGrain.refOri * frame_transform).eulerAngles()
     
     grain_eulers *= 180 / np.pi
 
