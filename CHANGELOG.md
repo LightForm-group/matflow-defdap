@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.3] - 2021.01.07
+
+### Added
+
+- Add option to scale the microstructure image produced in `get_DIC_image` snippet.
+- Apply rotation of hex unit cell from y // a2 in EBSD data to x // a1 expected by simulation in `get_DIC_image` snippet.
+
+### Fixed
+
+- Change grain numbering to 0-indexed in `get_DIC_image` snippet.
+
 ## [0.1.2] - 2020.07.28
 
 ### Added
