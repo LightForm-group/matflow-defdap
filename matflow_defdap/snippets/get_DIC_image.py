@@ -10,22 +10,20 @@ from matflow_defdap import main_func
 def get_DIC_image(DicMap, scaling_factor):
 
     # Construct an array of Euler angles
-    grain_eulers = np.empty((len(DicMap), 3))
+    grain_quats = np.empty((len(DicMap), 4))
 
     # Transformation orientations from EBSD orientation reference frame to EBSD spatial reference frame
     frame_transform = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
-    
+
     if DicMap.ebsdMap.crystalSym == 'hexagonal':
         # Convert hex conventions from y // a2 of the EBSD map to x // a1 for DAMASK
         hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
         for i, grain in enumerate(DicMap):
-            grain_eulers[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform).eulerAngles()
+            grain_quats[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform)
 
     else:
         for i, grain in enumerate(DicMap):
-            grain_eulers[i] = (grain.ebsdGrain.refOri * frame_transform).eulerAngles()
-    
-    grain_eulers *= 180 / np.pi
+            grain_quats[i] = (grain.ebsdGrain.refOri * frame_transform)
 
     # Filter out -1 (grain boundary points) and -2 (too small grains) values in the grain image
     grain_image = DicMap.grains
@@ -42,7 +40,11 @@ def get_DIC_image(DicMap, scaling_factor):
     grain_image -= 1
 
     DIC_image = {
-        'orientations': grain_eulers,
+        'orientations': {
+            'type': 'quat',
+            'unit_cell_alignment': {'x': 'a'},
+            'quaternions': grain_quats,
+        },
         'grains': grain_image,
         'scale': DicMap.scale,
     }

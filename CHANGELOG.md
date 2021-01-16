@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.4] - xxxx.xx.xx
+
+### Changed
+
+- In `get_DIC_image.py` snippet, return `orientations` dict item in a format used in other MatFlow extensions (and return as quaternions).
+
 ## [0.1.3] - 2021.01.07
 
 ### Added
