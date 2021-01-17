@@ -19,11 +19,11 @@ def get_DIC_image(DicMap, scaling_factor):
         # Convert hex conventions from y // a2 of the EBSD map to x // a1 for DAMASK
         hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
         for i, grain in enumerate(DicMap):
-            grain_quats[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform)
+            grain_quats[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform).quatCoef
 
     else:
         for i, grain in enumerate(DicMap):
-            grain_quats[i] = (grain.ebsdGrain.refOri * frame_transform)
+            grain_quats[i] = (grain.ebsdGrain.refOri * frame_transform).quatCoef
 
     # Filter out -1 (grain boundary points) and -2 (too small grains) values in the grain image
     grain_image = DicMap.grains
