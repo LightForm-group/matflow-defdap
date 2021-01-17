@@ -44,6 +44,7 @@ def get_DIC_image(DicMap, scaling_factor):
             'type': 'quat',
             'unit_cell_alignment': {'x': 'a'},
             'quaternions': grain_quats,
+            'P': 1,  # DefDAP uses P=+1 (e.g see `defdap.quat.Quat.__mul__`)
         },
         'grains': grain_image,
         'scale': DicMap.scale,
