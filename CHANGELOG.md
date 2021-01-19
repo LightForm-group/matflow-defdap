@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.1.4] - xxxx.xx.xx
+## [0.1.4] - 2021.01.19
 
 ### Changed
 
