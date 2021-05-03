@@ -12,11 +12,12 @@ def get_DIC_image(DicMap, scaling_factor):
     # Construct an array of Euler angles
     grain_quats = np.empty((len(DicMap), 4))
 
-    # Transformation orientations from EBSD orientation reference frame to EBSD spatial reference frame
+    # Transformation orientations from EBSD orientation reference frame
+    # to EBSD spatial reference frame
     frame_transform = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
 
     if DicMap.ebsdMap.crystalSym == 'hexagonal':
-        # Convert hex conventions from y // a2 of the EBSD map to x // a1 for DAMASK
+        # Convert hex convention from y // a2 of EBSD map to x // a1 for DAMASK
         hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
         for i, grain in enumerate(DicMap):
             grain_quats[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform).quatCoef
@@ -25,7 +26,8 @@ def get_DIC_image(DicMap, scaling_factor):
         for i, grain in enumerate(DicMap):
             grain_quats[i] = (grain.ebsdGrain.refOri * frame_transform).quatCoef
 
-    # Filter out -1 (grain boundary points) and -2 (too small grains) values in the grain image
+    # Filter out -1 (grain boundary points) and -2 (too small grains)
+    # values in the grain image
     grain_image = DicMap.grains
     remove_boundary_points(grain_image)
     remove_small_grain_points(grain_image)
@@ -34,11 +36,16 @@ def get_DIC_image(DicMap, scaling_factor):
 
     # scale down image if needed
     if scaling_factor != 1:
-        grain_image = zoom(grain_image, scaling_factor, order=0, prefilter=False, mode='nearest')
+        grain_image = zoom(grain_image, scaling_factor, order=0, 
+                           prefilter=False, mode='nearest')
 
     # downstream expects grain numbering to start at 0 not 1
     grain_image -= 1
 
+    try:
+        dic_scale = DicMap.scale
+    except ValueError:
+        dic_scale = None
     DIC_image = {
         'orientations': {
             'type': 'quat',
@@ -47,7 +54,7 @@ def get_DIC_image(DicMap, scaling_factor):
             'P': 1,  # DefDAP uses P=+1 (e.g see `defdap.quat.Quat.__mul__`)
         },
         'grains': grain_image,
-        'scale': DicMap.scale,
+        'scale': dic_scale,
     }
 
     return DIC_image
@@ -73,12 +80,14 @@ def select_area(i, j, grain_image):
         j_max = 0
         on_edge += 1
 
-    area = grain_image[i-i_min:i+i_max+1, j-j_min:j+j_max+1]  # select 3x3 region around point
-    
+    # select 3x3 region around point
+    area = grain_image[i-i_min:i+i_max+1, j-j_min:j+j_max+1]
+
     return area, on_edge
 
 
-def remove_boundary_points(grain_image, force_remove=False, max_iterations=200):
+def remove_boundary_points(grain_image, force_remove=False, 
+                           max_iterations=200):
     num_bad_prev = 0
     iteration = 0
     while True:
@@ -135,7 +144,8 @@ def remove_boundary_points(grain_image, force_remove=False, max_iterations=200):
             # give up, try in next iteration
 
         num_bad_prev = num_bad
-        grain_image[:, :] = grain_image_new  # [:, :] required to update the array passed in
+        # [:, :] required to update the array passed in
+        grain_image[:, :] = grain_image_new
 
 
 def remove_small_grain_points(grain_image, max_iterations=200):
@@ -143,7 +153,7 @@ def remove_small_grain_points(grain_image, max_iterations=200):
     # start checking for 8 neighbours, then 7 until 2
     all_done = False
     for num_neighbours in list(range(8, 1, -1)):
-        print("Starting iterations with at least {:} equal neighbours".format(num_neighbours))
+        print(f"Starting iterations with at least {num_neighbours} equal neighbours")
 
         num_bad_prev = 0
         iteration = 0
@@ -180,7 +190,8 @@ def remove_small_grain_points(grain_image, max_iterations=200):
                         break
 
             num_bad_prev = num_bad
-            grain_image[:, :] = grain_image_new  # [:, :] required to update the array passed in
+            # [:, :] required to update the array passed in
+            grain_image[:, :] = grain_image_new
 
         if all_done:
             break

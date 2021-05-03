@@ -6,11 +6,11 @@ from matflow_defdap import main_func
 
 
 @main_func
-def load_EBSD_map(root_path, ebsd_filename, ebsd_structure, ebsd_flip_vert, ebsd_boundary_tol,
-                  ebsd_min_grain_size):
+def load_EBSD_map(root_path, ebsd_filename, ebsd_flip_vert,
+                  ebsd_boundary_tol, ebsd_min_grain_size):
     'Load EBSD map and detect grains.'
 
-    EbsdMap = ebsd.Map(Path(root_path).joinpath(ebsd_filename), ebsd_structure)
+    EbsdMap = ebsd.Map(Path(root_path).joinpath(ebsd_filename))
 
     # Flip EBSD map in vertical direction if needed
     if ebsd_flip_vert:
