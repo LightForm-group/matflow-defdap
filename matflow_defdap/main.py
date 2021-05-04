@@ -62,3 +62,44 @@ def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor)
 )
 def read_DIC_image_file(path):
     return hickle.load(path)
+
+
+@sources_mapper(task='load_microstructure', method='EBSD',
+                script='load_microstructure')
+def load_microstructure_EBSD():
+
+    script_name = 'load_microstructure.py'
+    snippets = [
+        {'name': 'load_EBSD_map.py'},
+        {'name': 'get_EBSD_image.py'},
+    ]
+    outputs = ['EBSD_image']
+    out = {
+        'script': {
+            'content': get_wrapper_script(script_name, snippets, outputs),
+            'filename': script_name,
+        }
+    }
+    return out
+
+
+@input_mapper(input_file='inputs.hdf5', task='load_microstructure', method='EBSD')
+def write_param_file_2(path, EBSD, root_path, scaling_factor):
+    obj = {
+        'ebsd_filename': EBSD['filename'],
+        'ebsd_flip_vert': EBSD.get('flip_vert', False),
+        'ebsd_boundary_tol': EBSD.get('boundary_tol', 10),
+        'ebsd_min_grain_size': EBSD.get('min_grain_size', 10),
+        'root_path': root_path,
+        'scaling_factor': scaling_factor,
+    }
+    hickle.dump(obj, path)
+
+
+@output_mapper(
+    output_name='microstructure_image',
+    task='load_microstructure',
+    method='EBSD',
+)
+def read_EBSD_image_file(path):
+    return hickle.load(path)
