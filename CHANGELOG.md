@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.5] - 2021.05.18
+
+### Added
+
+- Add implementation of task `load_microstructure`, method `EBSD`.
+
+### Changed
+
+- Update for latest version of defdap (>0.93).
+- Set default values for parameters in input map for task `load_microstructure`, method `EBSD+DIC`.
+
 ## [0.1.4] - 2021.01.19
 
 ### Changed
