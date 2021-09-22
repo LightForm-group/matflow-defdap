@@ -44,6 +44,7 @@ def get_EBSD_image(EbsdMap, scaling_factor):
             'unit_cell_alignment': {'x': 'a'},
             'quaternions': grain_quats,
             'P': 1,  # DefDAP uses P=+1 (e.g see `defdap.quat.Quat.__mul__`)
+            'quat_component_ordering': 'scalar-vector',
         },
         'grains': grain_image,
         'scale': EbsdMap.scale,
