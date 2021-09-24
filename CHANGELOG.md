@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.6] - 2021.xx.xx
+
+### Changed
+
+- Add `quat_component_ordering` key to `orientations` sub-dict in `EBSD_image` and `DIC_image` output parameters.
+
 ## [0.1.5] - 2021.05.18
 
 ### Added
