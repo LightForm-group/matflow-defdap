@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.7] - 2021
+
+### Changed
+
+- Update bad point filtering in `get_EBSD_image` to make sure no grain values < 0 are passed out.
+
 ## [0.1.6] - 2021.09.24
 
 ### Changed

@@ -53,28 +53,47 @@ def get_EBSD_image(EbsdMap, scaling_factor):
     return EBSD_image
 
 
-def select_area(i, j, grain_image):
-    i_min, i_max = 1, 1
-    j_min, j_max = 1, 1
-
+def select_area(i, j, grain_image, kind=None):
     on_edge = 0
 
-    if i == 0:
-        i_min = 0
-        on_edge += 1
-    elif i == grain_image.shape[0]-1:
-        i_max = 0
-        on_edge += 1
+    if kind == '4_closest':
+        area = []
+        if i != 0:
+            area.append(grain_image[i - 1, j])
+            on_edge += 1
+        elif i != grain_image.shape[0] - 1:
+            area.append(grain_image[i + 1, j])
+            on_edge += 1
 
-    if j == 0:
-        j_min = 0
-        on_edge += 1
-    elif j == grain_image.shape[1]-1:
-        j_max = 0
-        on_edge += 1
+        if j != 0:
+            area.append(grain_image[i, j - 1])
+            on_edge += 1
+        elif j != grain_image.shape[1] - 1:
+            area.append(grain_image[i, j + 1])
+            on_edge += 1
 
-    # select 3x3 region around point
-    area = grain_image[i-i_min:i+i_max+1, j-j_min:j+j_max+1]
+        area = np.array(area)
+
+    else:
+        i_min, i_max = 1, 1
+        j_min, j_max = 1, 1
+
+        if i == 0:
+            i_min = 0
+            on_edge += 1
+        elif i == grain_image.shape[0] - 1:
+            i_max = 0
+            on_edge += 1
+
+        if j == 0:
+            j_min = 0
+            on_edge += 1
+        elif j == grain_image.shape[1] - 1:
+            j_max = 0
+            on_edge += 1
+
+        # select 3x3 region around point
+        area = grain_image[i - i_min:i + i_max + 1, j - j_min:j + j_max + 1]
 
     return area, on_edge
 
@@ -83,8 +102,11 @@ def remove_small_grain_points(grain_image, max_iterations=200):
     # num_neighbours - must have at least this many pixels surrounding
     # start checking for 8 neighbours, then 7 until 2
     all_done = False
-    for num_neighbours in list(range(8, 1, -1)):
-        print(f"Starting iterations with at least {num_neighbours} equal neighbours")
+    for num_neighbours in range(8, 0, -1):
+        print(f"Starting iterations with at least {num_neighbours} equal "
+              f"neighbour pixels")
+
+        force = num_neighbours == 1
 
         num_bad_prev = 0
         iteration = 0
@@ -104,21 +126,28 @@ def remove_small_grain_points(grain_image, max_iterations=200):
                 break
 
             iteration += 1
-            print("Starting iteration {}, num bad: {}".format(iteration, num_bad))
+            if force:
+                print("All bad points must die! Picking largest neighbour.")
+            else:
+                print("Starting iteration {}, num bad: {}".format(iteration, num_bad))
 
             grain_image_new = np.copy(grain_image)
-
             for i, j in zip(*np.where(grain_image == -2)):
-
-                area, on_edge = select_area(i, j, grain_image)
+                kind = '4_closest' if force else None
+                area, on_edge = select_area(i, j, grain_image, kind=kind)
                 area = area.flatten()
-                area = area[np.where(area > 0)]   # remove -1 and -2
+                area = area[area > 0]  # remove -1 and -2
 
-                mode_vals, mode_counts = mode(area)
-                for mode_val, mode_count in zip(mode_vals, mode_counts):
-                    if mode_count >= num_neighbours:
-                        grain_image_new[i, j] = mode_val
-                        break
+                if force:
+                    sizes = [np.count_nonzero(grain_image == k) for k in area]
+                    grain_image_new[i, j] = area[np.argsort(sizes)[-1]]
+
+                else:
+                    mode_vals, mode_counts = mode(area)
+                    for mode_val, mode_count in zip(mode_vals, mode_counts):
+                        if mode_count >= num_neighbours:
+                            grain_image_new[i, j] = mode_val
+                            break
 
             num_bad_prev = num_bad
             # [:, :] required to update the array passed in
