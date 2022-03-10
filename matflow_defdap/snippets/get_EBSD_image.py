@@ -7,27 +7,27 @@ from matflow_defdap import main_func
 
 
 @main_func
-def get_EBSD_image(EbsdMap, scaling_factor):
+def get_EBSD_image(ebsd_map, scaling_factor):
 
     # Construct an array of Euler angles
-    grain_quats = np.empty((len(EbsdMap), 4))
+    grain_quats = np.empty((len(ebsd_map), 4))
 
     # Transformation orientations from EBSD orientation reference frame
     # to EBSD spatial reference frame
     frame_transform = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
 
-    if EbsdMap.crystalSym == 'hexagonal':
+    if ebsd_map.crystalSym == 'hexagonal':
         # Convert hex convention from y // a2 of EBSD map to x // a1 for DAMASK
         hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
-        for i, grain in enumerate(EbsdMap):
+        for i, grain in enumerate(ebsd_map):
             grain_quats[i] = (hex_transform * grain.refOri * frame_transform).quatCoef
 
     else:
-        for i, grain in enumerate(EbsdMap):
+        for i, grain in enumerate(ebsd_map):
             grain_quats[i] = (grain.refOri * frame_transform).quatCoef
 
     # Filter out -2 (too small grains) values in the grain image
-    grain_image = EbsdMap.grains
+    grain_image = ebsd_map.grains
     remove_small_grain_points(grain_image)
 
     # scale down image if needed
@@ -47,7 +47,9 @@ def get_EBSD_image(EbsdMap, scaling_factor):
             'quat_component_ordering': 'scalar-vector',
         },
         'grains': grain_image,
-        'scale': EbsdMap.scale,
+        'scale': ebsd_map.scale,
+        'phase_labels': [phase.name for phase in ebsd_map.phases],
+        'grain_phases': [grain.phaseID for grain in ebsd_map],
     }
 
     return EBSD_image
