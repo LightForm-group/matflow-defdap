@@ -7,8 +7,8 @@ from matflow_defdap import main_func
 
 
 @main_func
-def load_EBSD_map(root_path, ebsd_filename, ebsd_flip_vert,
-                  ebsd_boundary_tol, ebsd_min_grain_size):
+def load_EBSD_map(root_path, ebsd_filename, ebsd_boundary_tol,
+                  ebsd_min_grain_size):
     'Load EBSD map and detect grains.'
 
     ebsd_map = ebsd.Map(Path(root_path).joinpath(ebsd_filename))
@@ -16,12 +16,6 @@ def load_EBSD_map(root_path, ebsd_filename, ebsd_flip_vert,
     # check for non-indexed points
     if np.count_nonzero(ebsd_map.phaseArray == 0) != 0:
         raise ValueError('EBSD map contains non-indexed points.')
-
-    # Flip EBSD map in vertical direction if needed
-    if ebsd_flip_vert:
-        ebsd_map.eulerAngleArray = ebsd_map.eulerAngleArray[:, ::-1, ::-1]
-        ebsd_map.bandContrastArray = ebsd_map.bandContrastArray[::-1, ::-1]
-        ebsd_map.phaseArray = ebsd_map.phaseArray[::-1, ::-1]
 
     ebsd_map.buildQuatArray()
 

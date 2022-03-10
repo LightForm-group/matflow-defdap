@@ -44,7 +44,6 @@ def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor)
         'dic_min_grain_size': DIC.get('min_grain_size', 10),
         'dic_homog_points': DIC['homog_points'],
         'ebsd_filename': EBSD['filename'],
-        'ebsd_flip_vert': EBSD.get('flip_vert', False),
         'ebsd_boundary_tol': EBSD.get('boundary_tol', 10),
         'ebsd_min_grain_size': EBSD.get('min_grain_size', 10),
         'ebsd_homog_points': EBSD['homog_points'],
@@ -87,7 +86,6 @@ def load_microstructure_EBSD():
 def write_param_file_2(path, EBSD, root_path, scaling_factor):
     obj = {
         'ebsd_filename': EBSD['filename'],
-        'ebsd_flip_vert': EBSD.get('flip_vert', False),
         'ebsd_boundary_tol': EBSD.get('boundary_tol', 10),
         'ebsd_min_grain_size': EBSD.get('min_grain_size', 10),
         'root_path': root_path,
