@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.8] - 2022.03.11
+
+### Added
+
+- Add creation of microstructure images with multiple phases from an EBSD map.
+- Add check for non-indexed points when loading an EBSD map.
+
+### Changed
+
+- Only pass `scale` from a DIC map if it exists.
+
 ## [0.1.7] - 2021.11.30
 
 ### Changed
