@@ -36,7 +36,7 @@ def load_microstructure_EBSD_DIC():
 
 
 @input_mapper(input_file='inputs.hdf5', task='load_microstructure', method='EBSD+DIC')
-def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor):
+def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor, find_grains_algorithm):
     obj = {
         'dic_filename': DIC['filename'],
         'dic_crop': DIC.get('crop', None),
@@ -44,13 +44,13 @@ def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor)
         'dic_min_grain_size': DIC.get('min_grain_size', 10),
         'dic_homog_points': DIC['homog_points'],
         'ebsd_filename': EBSD['filename'],
-        'ebsd_flip_vert': EBSD.get('flip_vert', False),
         'ebsd_boundary_tol': EBSD.get('boundary_tol', 10),
         'ebsd_min_grain_size': EBSD.get('min_grain_size', 10),
         'ebsd_homog_points': EBSD['homog_points'],
         'transform_type': transform_type,
         'root_path': root_path,
         'scaling_factor': scaling_factor,
+        'find_grain_algorithm': find_grains_algorithm,
     }
     hickle.dump(obj, path)
 
@@ -87,7 +87,6 @@ def load_microstructure_EBSD():
 def write_param_file_2(path, EBSD, root_path, scaling_factor):
     obj = {
         'ebsd_filename': EBSD['filename'],
-        'ebsd_flip_vert': EBSD.get('flip_vert', False),
         'ebsd_boundary_tol': EBSD.get('boundary_tol', 10),
         'ebsd_min_grain_size': EBSD.get('min_grain_size', 10),
         'root_path': root_path,
