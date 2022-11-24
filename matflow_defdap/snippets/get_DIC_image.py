@@ -7,28 +7,28 @@ from matflow_defdap import main_func
 
 
 @main_func
-def get_DIC_image(DicMap, scaling_factor):
+def get_DIC_image(dic_map, scaling_factor):
 
     # Construct an array of Euler angles
-    grain_quats = np.empty((len(DicMap), 4))
+    grain_quats = np.empty((len(dic_map), 4))
 
     # Transformation orientations from EBSD orientation reference frame
     # to EBSD spatial reference frame
     frame_transform = Quat.fromAxisAngle(np.array((1, 0, 0)), np.pi)
 
-    if DicMap.ebsdMap.crystalSym == 'hexagonal':
+    if dic_map.ebsdMap.crystalSym == 'hexagonal':
         # Convert hex convention from y // a2 of EBSD map to x // a1 for DAMASK
         hex_transform = Quat.fromAxisAngle(np.array([0, 0, 1]), -np.pi/6)
-        for i, grain in enumerate(DicMap):
+        for i, grain in enumerate(dic_map):
             grain_quats[i] = (hex_transform * grain.ebsdGrain.refOri * frame_transform).quatCoef
 
     else:
-        for i, grain in enumerate(DicMap):
+        for i, grain in enumerate(dic_map):
             grain_quats[i] = (grain.ebsdGrain.refOri * frame_transform).quatCoef
 
     # Filter out -1 (grain boundary points) and -2 (too small grains)
     # values in the grain image
-    grain_image = DicMap.grains
+    grain_image = dic_map.grains
     remove_boundary_points(grain_image)
     remove_small_grain_points(grain_image)
     remove_boundary_points(grain_image)
@@ -42,10 +42,6 @@ def get_DIC_image(DicMap, scaling_factor):
     # downstream expects grain numbering to start at 0 not 1
     grain_image -= 1
 
-    try:
-        dic_scale = DicMap.scale
-    except ValueError:
-        dic_scale = None
     DIC_image = {
         'orientations': {
             'type': 'quat',
@@ -55,8 +51,11 @@ def get_DIC_image(DicMap, scaling_factor):
             'quat_component_ordering': 'scalar-vector',
         },
         'grains': grain_image,
-        'scale': dic_scale,
     }
+    try:
+        DIC_image['scale'] = dic_map.scale
+    except ValueError:
+        pass
 
     return DIC_image
 
