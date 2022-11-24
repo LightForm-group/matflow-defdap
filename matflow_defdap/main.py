@@ -50,7 +50,7 @@ def write_param_file(path, DIC, EBSD, transform_type, root_path, scaling_factor,
         'transform_type': transform_type,
         'root_path': root_path,
         'scaling_factor': scaling_factor,
-        'find_grain_algorithm': find_grains_algorithm,
+        'find_grains_algorithm': find_grains_algorithm,
     }
     hickle.dump(obj, path)
 
